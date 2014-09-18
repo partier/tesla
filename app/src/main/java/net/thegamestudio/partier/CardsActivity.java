@@ -7,6 +7,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
 
 public class CardsActivity extends ActionBarActivity {
 
@@ -39,6 +41,16 @@ public class CardsActivity extends ActionBarActivity {
     /** Fetch a new card from the server. */
     public void fetchNewCard(View view) {
         // TODO: Perform an HTTP Request to our endpoint (should be "server.ext/card") and pass the resulting JSONObject into the Card constructor.
+
+        // Get from THIS address http://partier-emily-dev.herokuapp.com/card
+        String jsonString = "";
+        org.json.JSONObject newJSONObj = null;
+
+        try {
+            newJSONObj = new org.json.JSONObject(jsonString);
+        } catch (Exception e) {
+        }
+
         Card c = new Card();
         showCard(c);
     }

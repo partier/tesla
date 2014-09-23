@@ -2,12 +2,23 @@ package net.thegamestudio.partier;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.DebugUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import org.apache.commons.logging.Log;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
+import android.net.http.AndroidHttpClient;
+
+import java.io.Console;
+import java.io.IOException;
 
 
 public class CardsActivity extends ActionBarActivity {
@@ -41,18 +52,41 @@ public class CardsActivity extends ActionBarActivity {
     /** Fetch a new card from the server. */
     public void fetchNewCard(View view) {
         // TODO: Perform an HTTP Request to our endpoint (should be "server.ext/card") and pass the resulting JSONObject into the Card constructor.
+        DefaultHttpClient httpClient = new DefaultHttpClient();
 
-        // Get from THIS address http://partier-emily-dev.herokuapp.com/card
+        HttpPost httpPost = new HttpPost(_serverAddr);
+
+        ResponseHandler responseHandler = new BasicResponseHandler();
+
+        // Get from THIS address
         String jsonString = "";
-        org.json.JSONObject newJSONObj = null;
+        JSONObject newJSONObj = null;
 
-        try {
-            newJSONObj = new org.json.JSONObject(jsonString);
-        } catch (Exception e) {
+        String message = "";
+
+        try
+        {
+            httpClient.execute(httpPost, responseHandler);
+            jsonString = responseHandler.toString();
+
+            newJSONObj = new JSONObject(jsonString);
+        }
+        catch (IOException e)
+        {
+            message = e.toString();
+        }
+        catch (Exception e)
+        {
+            message = e.toString();
         }
 
         Card c = new Card();
         showCard(c);
+    }
+
+    protected void foo()
+    {
+
     }
 
     protected void showCard(Card card) {
@@ -69,4 +103,6 @@ public class CardsActivity extends ActionBarActivity {
         bodyView.setText(card.getBody());
         helpView.setText(card.getHelp());
     }
+
+    private String _serverAddr = "http://partier-emily-dev.herokuapp.com/card";
 }

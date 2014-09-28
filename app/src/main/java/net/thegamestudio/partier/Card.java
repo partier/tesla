@@ -40,12 +40,14 @@ public class Card {
     }
 
     /** Create a card from a JSONObject. */
-    Card(JSONObject json) {
+    Card(String json) {
         try {
-            title = (String) json.get("title");
-            body = (String) json.get("body");
-            help = (String) json.get("help");
-            type = (String) json.get("type");
+            JSONObject jsonObject = new JSONObject(json);
+
+            title = (String) jsonObject.get("title");
+            body = (String) jsonObject.get("body");
+            help = (String) jsonObject.get("help");
+            type = (String) jsonObject.get("type");
         } catch (JSONException e) {
             e.printStackTrace();
         }

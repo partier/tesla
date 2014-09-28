@@ -52,41 +52,17 @@ public class CardsActivity extends ActionBarActivity {
     /** Fetch a new card from the server. */
     public void fetchNewCard(View view) {
         // TODO: Perform an HTTP Request to our endpoint (should be "server.ext/card") and pass the resulting JSONObject into the Card constructor.
-        DefaultHttpClient httpClient = new DefaultHttpClient();
+        if (_httpGetCardClient == null)
+            _httpGetCardClient = new HTTPGetCardClient(_serverAddr, this);
 
-        HttpPost httpPost = new HttpPost(_serverAddr);
-
-        ResponseHandler responseHandler = new BasicResponseHandler();
-
-        // Get from THIS address
-        String jsonString = "";
-        JSONObject newJSONObj = null;
-
-        String message = "";
-
-        try
-        {
-            httpClient.execute(httpPost, responseHandler);
-            jsonString = responseHandler.toString();
-
-            newJSONObj = new JSONObject(jsonString);
-        }
-        catch (IOException e)
-        {
-            message = e.toString();
-        }
-        catch (Exception e)
-        {
-            message = e.toString();
-        }
-
-        Card c = new Card();
-        showCard(c);
+        if (!_httpGetCardClient.IsRunning())
+            _httpGetCardClient.execute();
     }
 
-    protected void foo()
+    public void CreateNewCard(String jsonCardData)
     {
-
+        Card c = new Card(jsonCardData);
+        showCard(c);
     }
 
     protected void showCard(Card card) {
@@ -104,5 +80,6 @@ public class CardsActivity extends ActionBarActivity {
         helpView.setText(card.getHelp());
     }
 
-    private String _serverAddr = "http://partier-emily-dev.herokuapp.com/card";
+    private String _serverAddr = "https://partier-emily-dev.herokuapp.com/card";
+    private HTTPGetCardClient _httpGetCardClient = null;
 }

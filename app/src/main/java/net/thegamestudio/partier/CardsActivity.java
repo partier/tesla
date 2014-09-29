@@ -6,6 +6,7 @@ import android.util.DebugUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.apache.commons.logging.Log;
@@ -19,6 +20,7 @@ import android.net.http.AndroidHttpClient;
 
 import java.io.Console;
 import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
 
 
 public class CardsActivity extends ActionBarActivity {
@@ -52,6 +54,13 @@ public class CardsActivity extends ActionBarActivity {
     /** Fetch a new card from the server. */
     public void fetchNewCard(View view) {
         // TODO: Perform an HTTP Request to our endpoint (should be "server.ext/card") and pass the resulting JSONObject into the Card constructor.
+        Button newCardButton = (Button) findViewById(R.id.newCardButton);
+        if (newCardButton == null)
+        {
+            //TODO: Handle this
+            return;
+        }
+
         if (_httpGetCardClient == null)
             _httpGetCardClient = new HTTPGetCardClient(_serverAddr, this);
 

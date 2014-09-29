@@ -10,10 +10,16 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URLConnection;
+import java.net.URL;
+import java.nio.Buffer;
 
 /**
  * Created by Br4ndong on 9/28/2014.
@@ -36,25 +42,20 @@ public class HTTPGetCardClient extends AsyncTask<Void, Void, String> {
     protected String doInBackground(Void... params) {
         _isRunning = true;
         String jsonString = null;
+        URL url = null;
+        HttpURLConnection connection = null;
 
         try
         {
-            // Create the http post client
-            DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpPost httpPost = new HttpPost(_webAddress);
-            //TODO:Do we need to set header info here?
-            /*httpPost.setHeader("Content-type", "application/json");
-            httpPost.setHeader("Content-length", "0");*/
+            // Open a connection to the web address
+            url = new URL(_webAddress);
+            connection = (HttpURLConnection) url.openConnection();
 
-            // Execute the post request
-            HttpResponse responseHandler = httpClient.execute(httpPost);
-
-            // Get a handle to the content that was received
-            HttpEntity entity = responseHandler.getEntity();
-            InputStream content = entity.getContent();
+            // Create a reader to read the content from the post
+            InputStream content = new BufferedInputStream(connection.getInputStream());
             BufferedReader contentReader = new BufferedReader(new InputStreamReader(content));
 
-            // Build a JSON object from the content received
+            // Build a JSON string from the content received
             String line;
             StringBuilder stringBuilder = new StringBuilder();
             while ((line = contentReader.readLine()) != null)
@@ -74,6 +75,10 @@ public class HTTPGetCardClient extends AsyncTask<Void, Void, String> {
         {
             Reset();
             jsonString = e.toString();
+        }
+        finally {
+            if (connection != null)
+                connection.disconnect();
         }
 
         Reset();

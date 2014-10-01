@@ -2,25 +2,11 @@ package net.thegamestudio.partier;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.DebugUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
-import org.apache.commons.logging.Log;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONObject;
-import android.net.http.AndroidHttpClient;
-
-import java.io.Console;
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
 
 
 public class CardsActivity extends ActionBarActivity {
@@ -53,7 +39,31 @@ public class CardsActivity extends ActionBarActivity {
 
     /** Fetch a new card from the server. */
     public void fetchNewCard(View view) {
-        // TODO: Perform an HTTP Request to our endpoint (should be "server.ext/card") and pass the resulting JSONObject into the Card constructor.
+
+        enableNewCardButton(false);
+
+        try {
+            HTTPGetCardClient httpGetCardClient = new HTTPGetCardClient(_serverAddr, this);
+            httpGetCardClient.execute();
+        }
+        catch (Exception e)
+        {
+            //TODO: Notify the user that requesting a card failed and why
+            String exception = e.toString();
+            enableNewCardButton(true);
+        }
+    }
+
+    public void CreateNewCard(String jsonCardData)
+    {
+        enableNewCardButton(true);
+
+        Card c = new Card(jsonCardData);
+        showCard(c);
+    }
+
+    protected void enableNewCardButton(boolean enable)
+    {
         Button newCardButton = (Button) findViewById(R.id.newCardButton);
         if (newCardButton == null)
         {
@@ -61,17 +71,7 @@ public class CardsActivity extends ActionBarActivity {
             return;
         }
 
-        if (_httpGetCardClient == null)
-            _httpGetCardClient = new HTTPGetCardClient(_serverAddr, this);
-
-        if (!_httpGetCardClient.IsRunning())
-            _httpGetCardClient.execute();
-    }
-
-    public void CreateNewCard(String jsonCardData)
-    {
-        Card c = new Card(jsonCardData);
-        showCard(c);
+        newCardButton.setEnabled(enable);
     }
 
     protected void showCard(Card card) {
@@ -90,5 +90,4 @@ public class CardsActivity extends ActionBarActivity {
     }
 
     private String _serverAddr = "https://partier-emily-dev.herokuapp.com/card";
-    private HTTPGetCardClient _httpGetCardClient = null;
 }

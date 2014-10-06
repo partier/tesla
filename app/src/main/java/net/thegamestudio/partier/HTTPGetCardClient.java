@@ -39,6 +39,22 @@ public class HTTPGetCardClient extends AsyncTask<Void, Void, String> {
             url = new URL(_webAddress);
             connection = (HttpURLConnection) url.openConnection();
 
+            // Don't follow redirects, you dingus!
+            connection.setInstanceFollowRedirects(false);
+
+            connection.connect();
+
+            // Check the response code of the connection opened.
+            int responseCode = connection.getResponseCode();
+
+            // Determine if there was a redirect.
+            if (responseCode == 301 || responseCode == 302)
+            {
+                // Yep. We got redirected. Refresh the connection.
+                String location = connection.getHeaderField("location");
+                connection = (HttpURLConnection) new URL(location).openConnection();
+            }
+
             // Create a reader to read the content from the post
             InputStream content = new BufferedInputStream(connection.getInputStream());
             BufferedReader contentReader = new BufferedReader(new InputStreamReader(content));

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 
@@ -38,9 +39,39 @@ public class CardsActivity extends ActionBarActivity {
 
     /** Fetch a new card from the server. */
     public void fetchNewCard(View view) {
-        // TODO: Perform an HTTP Request to our endpoint (should be "server.ext/card") and pass the resulting JSONObject into the Card constructor.
-        Card c = new Card();
+
+        enableNewCardButton(false);
+
+        try {
+            HTTPGetCardClient httpGetCardClient = new HTTPGetCardClient(_serverAddr, this);
+            httpGetCardClient.execute();
+        }
+        catch (Exception e)
+        {
+            //TODO: Notify the user that requesting a card failed and why
+            String exception = e.toString();
+            enableNewCardButton(true);
+        }
+    }
+
+    public void CreateNewCard(String jsonCardData)
+    {
+        enableNewCardButton(true);
+
+        Card c = new Card(jsonCardData);
         showCard(c);
+    }
+
+    protected void enableNewCardButton(boolean enable)
+    {
+        Button newCardButton = (Button) findViewById(R.id.newCardButton);
+        if (newCardButton == null)
+        {
+            //TODO: Handle this
+            return;
+        }
+
+        newCardButton.setEnabled(enable);
     }
 
     protected void showCard(Card card) {
@@ -57,4 +88,6 @@ public class CardsActivity extends ActionBarActivity {
         bodyView.setText(card.getBody());
         helpView.setText(card.getHelp());
     }
+
+    private String _serverAddr = "https://partier-emily-dev.herokuapp.com/redirect";
 }

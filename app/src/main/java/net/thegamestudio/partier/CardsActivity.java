@@ -89,5 +89,5 @@ public class CardsActivity extends ActionBarActivity {
         helpView.setText(card.getHelp());
     }
 
-    private String _serverAddr = "https://partier-emily-dev.herokuapp.com/redirect";
+    private String _serverAddr = "https://partier-emily-dev.herokuapp.com/card";
 }

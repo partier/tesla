@@ -1,12 +1,20 @@
 package net.thegamestudio.partier;
 
 import android.os.AsyncTask;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.params.HttpClientParams;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 
 /**
@@ -18,6 +26,10 @@ public class HTTPGetCardClient extends AsyncTask<Void, Void, String> {
         _webAddress = webAddress;
         _cardsActivity = cardsActivity;
         _isRunning = false;
+
+        _authorization = 0;
+        _accept = "1";
+        _userAgent = "Tesla";
     }
 
     public boolean IsRunning()
@@ -31,32 +43,37 @@ public class HTTPGetCardClient extends AsyncTask<Void, Void, String> {
         _isRunning = true;
         String jsonString = null;
         URL url = null;
-        HttpURLConnection connection = null;
 
         try
         {
-            // Open a connection to the web address
-            url = new URL(_webAddress);
-            connection = (HttpURLConnection) url.openConnection();
+            // Create the client
+            HttpClient httpClient = new DefaultHttpClient();
 
-            // Don't follow redirects, you dingus!
-            connection.setInstanceFollowRedirects(false);
+            // Build the get request string
+            String getRequestString = _webAddress;
+            getRequestString += AddKey("Authorization", "0");
+            getRequestString += AddKey("Accept", _accept);
+            getRequestString += AddKey("User-Agent", _userAgent);
 
-            connection.connect();
+            // Create the get request at the endpoint
+            HttpGet httpGet = new HttpGet();
+            httpGet.setURI(new URI(getRequestString));
+            HttpResponse response = httpClient.execute(httpGet);
 
-            // Check the response code of the connection opened.
-            int responseCode = connection.getResponseCode();
+            // Disable auto-redirect (for now)
+            HttpClientParams.setRedirecting(new BasicHttpParams(), false);
 
-            // Determine if there was a redirect.
+            // Get the status code
+            int responseCode = response.getStatusLine().getStatusCode();
+
+            // Redirect
             if (responseCode == 301 || responseCode == 302)
             {
-                // Yep. We got redirected. Refresh the connection.
-                String location = connection.getHeaderField("location");
-                connection = (HttpURLConnection) new URL(location).openConnection();
+                String redirectURL = "";
             }
 
             // Create a reader to read the content from the post
-            InputStream content = new BufferedInputStream(connection.getInputStream());
+            InputStream content = new BufferedInputStream(response.getEntity().getContent());
             BufferedReader contentReader = new BufferedReader(new InputStreamReader(content));
 
             // Build a JSON string from the content received
@@ -81,8 +98,6 @@ public class HTTPGetCardClient extends AsyncTask<Void, Void, String> {
             jsonString = e.toString();
         }
         finally {
-            if (connection != null)
-                connection.disconnect();
         }
 
         Reset();
@@ -98,12 +113,21 @@ public class HTTPGetCardClient extends AsyncTask<Void, Void, String> {
         _cardsActivity.CreateNewCard(jsonCardData);
     }
 
+    protected String AddKey(String keyName, String value)
+    {
+        return "?" + keyName + "=" + value;
+    }
+
     protected void Reset()
     {
         _isRunning = false;
     }
 
     protected String _webAddress;
+    protected int _authorization;
+    protected String _accept;
+    protected String _userAgent;
+
     protected CardsActivity _cardsActivity;
     protected boolean _isRunning;
 }

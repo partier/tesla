@@ -27,9 +27,9 @@ public class HTTPGetCardClient extends AsyncTask<Void, Void, String> {
         _cardsActivity = cardsActivity;
         _isRunning = false;
 
-        _authorization = 0;
-        _accept = "1";
-        _userAgent = "Tesla";
+        _authorization = "0";
+        _accept = "application/json;version=1";
+        _userAgent = "Tesla/1.0";
     }
 
     public boolean IsRunning()
@@ -50,10 +50,10 @@ public class HTTPGetCardClient extends AsyncTask<Void, Void, String> {
             HttpClient httpClient = new DefaultHttpClient();
 
             // Build the get request string
-            String getRequestString = _webAddress;
-            getRequestString += AddKey("Authorization", "0");
-            getRequestString += AddKey("Accept", _accept);
-            getRequestString += AddKey("User-Agent", _userAgent);
+            String getRequestString = _webAddress + "?";
+            getRequestString += AddKey("Authorization", _authorization);
+            getRequestString += AddKeyDelimeter() + AddKey("Accept", _accept);
+            getRequestString += AddKeyDelimeter() + AddKey("User-Agent", _userAgent);
 
             // Create the get request at the endpoint
             HttpGet httpGet = new HttpGet();
@@ -115,7 +115,12 @@ public class HTTPGetCardClient extends AsyncTask<Void, Void, String> {
 
     protected String AddKey(String keyName, String value)
     {
-        return "?" + keyName + "=" + value;
+        return keyName + "=" + value;
+    }
+
+    protected String AddKeyDelimeter()
+    {
+        return "&";
     }
 
     protected void Reset()
@@ -124,7 +129,7 @@ public class HTTPGetCardClient extends AsyncTask<Void, Void, String> {
     }
 
     protected String _webAddress;
-    protected int _authorization;
+    protected String _authorization;
     protected String _accept;
     protected String _userAgent;
 

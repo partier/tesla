@@ -44,10 +44,11 @@ public class Card {
         try {
             JSONObject jsonObject = new JSONObject(json);
 
-            title = (String) jsonObject.get("title");
-            body = (String) jsonObject.get("body");
-            help = (String) jsonObject.get("help");
-            type = (String) jsonObject.get("type");
+            // Only accept valid input.
+            title = jsonObject.getString("title").equals("null") ? "Untitled Card" : jsonObject.getString("title");
+            body = jsonObject.getString("body").equals("null") ? "" :jsonObject.getString("body");
+            help = jsonObject.getString("help").equals("null") ? "" : jsonObject.getString("help");
+            type = jsonObject.getString("type").equals("null") ? "default" : jsonObject.getString("type");
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -49,7 +49,9 @@ public class Card {
             body = jsonObject.getString("body").equals("null") ? "" :jsonObject.getString("body");
             help = jsonObject.getString("help").equals("null") ? "" : jsonObject.getString("help");
             type = jsonObject.getString("type").equals("null") ? "default" : jsonObject.getString("type");
+
         } catch (JSONException e) {
+            // TODO: Handle this on the client, don't just spit out text to a nonexistant console.
             e.printStackTrace();
         }
     }

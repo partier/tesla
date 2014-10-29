@@ -32,11 +32,10 @@ public class Card {
 
     /** Empty constructor. Creates a default card. */
     Card() {
-        title = "Default Title " + debugIncrement;
-        body = "Default body copy " + debugIncrement + ".";
-        help = "Default help copy " + debugIncrement + ".";
+        title = "Welcome To Partier!";
+        body = "Partier provides fun prompts to inject controlled chaos into any social gathering. By following the directions on the cards whenever there's a lull in the action, you'll not only breathe life into the party, but become the life of the party!";
+        help = "Whenever you're ready for your first card, tap \"New Card.\" Our boy Rutherford will fetch one hot off the presses.";
         type = "default";
-        debugIncrement++;
     }
 
     /** Create a card from a JSONObject. */
@@ -51,8 +50,13 @@ public class Card {
             type = jsonObject.getString("type").equals("null") ? "default" : jsonObject.getString("type");
 
         } catch (JSONException e) {
-            // TODO: Handle this on the client, don't just spit out text to a nonexistant console.
+            // TODO: Handle this on the client, don't just spit out text to a nonexistent console.
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public String toString() {
+        return title + " | " + body + " | " + help + " | " + type;
     }
 }

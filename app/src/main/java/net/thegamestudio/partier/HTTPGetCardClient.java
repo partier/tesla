@@ -1,6 +1,7 @@
 package net.thegamestudio.partier;
 
 import android.os.AsyncTask;
+import android.util.Base64;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -16,18 +17,20 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.util.UUID;
 
 /**
  * Created by Br4ndong on 9/28/2014.
  */
 public class HTTPGetCardClient extends AsyncTask<Void, Void, String> {
-    HTTPGetCardClient(String webAddress, CardsActivity cardsActivity)
+    HTTPGetCardClient(String webAddress, CardsActivity cardsActivity, UUID uuid)
     {
         _webAddress = webAddress;
         _cardsActivity = cardsActivity;
         _isRunning = false;
 
-        _authorization = "0";
+        _authorization = Base64.encodeToString(uuidToBytes(uuid), Base64.DEFAULT);
         _accept = "application/json;version=1";
         _userAgent = "Tesla/1.0";
     }
@@ -50,14 +53,14 @@ public class HTTPGetCardClient extends AsyncTask<Void, Void, String> {
             HttpClient httpClient = new DefaultHttpClient();
 
             // Build the get request string
-            String getRequestString = _webAddress + "?";
-            getRequestString += AddKey("Authorization", _authorization);
-            getRequestString += AddKeyDelimeter() + AddKey("Accept", _accept);
-            getRequestString += AddKeyDelimeter() + AddKey("User-Agent", _userAgent);
+            String getRequestString = _webAddress;
 
             // Create the get request at the endpoint
             HttpGet httpGet = new HttpGet();
             httpGet.setURI(new URI(getRequestString));
+            httpGet.addHeader("Authorization", _authorization);
+            httpGet.addHeader("Accept", _accept);
+            httpGet.addHeader("User-Agent", _userAgent);
             HttpResponse response = httpClient.execute(httpGet);
 
             // Disable auto-redirect (for now)
@@ -126,6 +129,14 @@ public class HTTPGetCardClient extends AsyncTask<Void, Void, String> {
     protected void Reset()
     {
         _isRunning = false;
+    }
+
+    protected byte[] uuidToBytes(UUID uuid)
+    {
+        ByteBuffer b = ByteBuffer.wrap(new byte[16]);
+        b.putLong(uuid.getMostSignificantBits());
+        b.putLong(uuid.getLeastSignificantBits());
+        return b.array();
     }
 
     protected String _webAddress;

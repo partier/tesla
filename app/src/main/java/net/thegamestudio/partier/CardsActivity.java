@@ -1,5 +1,7 @@
 package net.thegamestudio.partier;
 
+import android.content.SharedPreferences;
+import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -8,12 +10,25 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.UUID;
+
 
 public class CardsActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+        if (!prefs.contains(UUID_KEY))
+        {
+            UUID id = UUID.randomUUID();
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString(UUID_KEY, id.toString());
+            editor.commit();
+        }
+        _uuid = UUID.fromString(prefs.getString(UUID_KEY, ""));
+
         setContentView(R.layout.activity_cards);
     }
 
@@ -41,9 +56,8 @@ public class CardsActivity extends ActionBarActivity {
     public void fetchNewCard(View view) {
 
         enableNewCardButton(false);
-
         try {
-            HTTPGetCardClient httpGetCardClient = new HTTPGetCardClient(_serverAddr, this);
+            HTTPGetCardClient httpGetCardClient = new HTTPGetCardClient(_serverAddr, this, _uuid);
             httpGetCardClient.execute();
         }
         catch (Exception e)
@@ -89,5 +103,7 @@ public class CardsActivity extends ActionBarActivity {
         helpView.setText(card.getHelp());
     }
 
+    private static UUID _uuid;
     private String _serverAddr = "https://partier-emily-dev.herokuapp.com/card";
+    private static final String UUID_KEY = "uuid";
 }

@@ -8,6 +8,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import java.util.Vector;
@@ -41,6 +44,31 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
 
         // Required API 11.
         mPager.setPageTransformer(true, new DepthPageTransformer());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.screen_slide_activity_actions, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch(item.getItemId()) {
+            case R.id.action_refresh:
+                refreshCardState();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void refreshCardState() {
+        System.out.println("Refreshing card state.");
+        // TODO: Actually refresh card state.
     }
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {

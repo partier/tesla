@@ -34,7 +34,7 @@ public class Card {
     Card() {
         title = "Welcome To Partier!";
         body = "Partier provides fun prompts to inject controlled chaos into any social gathering. By following the directions on the cards whenever there's a lull in the action, you'll not only breathe life into the party, but become the life of the party!";
-        help = "Whenever you're ready for your first card, tap \"New Card.\" Our boy Rutherford will fetch one hot off the presses.";
+        help = "Whenever you're ready for your first card, tap the \"Refresh\" button on the menu. Our boy Rutherford will fetch one hot off the presses.";
         type = "default";
     }
 

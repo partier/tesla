@@ -1,7 +1,6 @@
 package net.thegamestudio.partier;
 
 import android.content.SharedPreferences;
-import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -9,7 +8,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
+import com.pubnub.api.Callback;
+import com.pubnub.api.Pubnub;
+import com.pubnub.api.PubnubError;
+import com.pubnub.api.PubnubException;
 import java.util.UUID;
 
 
@@ -53,7 +55,7 @@ public class CardsActivity extends ActionBarActivity {
     }
 
     /** Fetch a new card from the server. */
-    public void fetchNewCard(View view) {
+    /*public void fetchNewCard(View view) {
 
         enableNewCardButton(false);
         try {
@@ -66,7 +68,7 @@ public class CardsActivity extends ActionBarActivity {
             String exception = e.toString();
             enableNewCardButton(true);
         }
-    }
+    }*/
 
     public void CreateNewCard(String jsonCardData)
     {
@@ -104,6 +106,6 @@ public class CardsActivity extends ActionBarActivity {
     }
 
     private static UUID _uuid;
-    private String _serverAddr = "https://partier-emily-dev.herokuapp.com/card";
+    private String _serverAddr = "https://partier-halloween.herokuapp.com/card";
     private static final String UUID_KEY = "uuid";
 }

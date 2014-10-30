@@ -24,7 +24,7 @@ import java.util.UUID;
  * Created by Br4ndong on 9/28/2014.
  */
 public class HTTPGetCardClient extends AsyncTask<Void, Void, String> {
-    HTTPGetCardClient(String webAddress, CardsActivity cardsActivity, UUID uuid)
+    HTTPGetCardClient(String webAddress, ScreenSlidePagerActivity cardsActivity, UUID uuid)
     {
         _webAddress = webAddress;
         _cardsActivity = cardsActivity;
@@ -144,6 +144,6 @@ public class HTTPGetCardClient extends AsyncTask<Void, Void, String> {
     protected String _accept;
     protected String _userAgent;
 
-    protected CardsActivity _cardsActivity;
+    protected ScreenSlidePagerActivity _cardsActivity;
     protected boolean _isRunning;
 }

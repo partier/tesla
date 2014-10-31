@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.internal.view.menu.ActionMenuItemView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,6 +32,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
     private ViewPager mPager;
     private ScreenSlidePagerAdapter mPagerAdapter;
     private Vector<Card> cards;
+    private MenuItem refreshButton;
 
     private static UUID _uuid;
     private String _serverAddr = "https://partier-halloween.herokuapp.com/card";
@@ -59,9 +61,6 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
         // Create a set of placeholder cards
         cards = new Vector<Card>();
         cards.add(new Card());
-        cards.add(new Card());
-        cards.add(new Card());
-        cards.add(new Card());
 
         // TODO: Transition to the new card when it arrives.
         // TODO: Implement the maximum card limit, NUM_CARDS. Old cards should be dropped from cards.
@@ -71,7 +70,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
         mPager.setAdapter(mPagerAdapter);
 
         // Required API 11.
-        mPager.setPageTransformer(true, new DepthPageTransformer());
+        mPager.setPageTransformer(true, new ZoomOutPageTransformer());
     }
 
     @Override
@@ -79,6 +78,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.screen_slide_activity_actions, menu);
+        refreshButton = menu.findItem(R.id.action_refresh);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -88,6 +88,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
         switch(item.getItemId()) {
             case R.id.action_refresh:
                 refreshCardState();
+                item.setEnabled(false);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -95,11 +96,16 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
     }
 
     private void refreshCardState() {
-        // Go to the last card so we can repopulate the first card
-        mPager.setCurrentItem(cards.size()-1, true);
-
-        System.out.println("Refreshing card state.");
-        // TODO: Actually refresh card state.
+        // Refresh card state.
+        try {
+            HTTPGetCardClient httpGetCardClient = new HTTPGetCardClient(_serverAddr, this, _uuid);
+            httpGetCardClient.execute();
+        }
+        catch (Exception e)
+        {
+            // TODO: Notify the user that requesting a card failed and why
+            System.out.println(e.toString());
+        }
 
         // Test the pubnub endpoint for push availability
         /*_pubnub = new Pubnub(_pubnubPublishKey, _pubnubSubscribeKey);
@@ -169,57 +175,34 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
             }
         };
         _pubnub.history(_pubnubChannel, 100, callback);*/
-
-        // Fetch a new card
-        try {
-            HTTPGetCardClient httpGetCardClient = new HTTPGetCardClient(_serverAddr, this, _uuid);
-            httpGetCardClient.execute();
-        }
-        catch (Exception e)
-        {
-            //TODO: Notify the user that requesting a card failed and why
-            System.out.println(e.toString());
-        }
     }
 
     public void CreateNewCard(String jsonCardData)
     {
         Card c = new Card(jsonCardData);
 
-        /*cards.add(c);
+        // Add the new card at the head of the list if the card doesn't already exist.
+        if (!cards.lastElement().equals(c)) {
+            cards.add(c);
 
-        mPagerAdapter.setFragmentData(c, cards.size() - 1);
+            // Remove the last card if we have too many.
+            if (cards.size() > NUM_CARDS) {
+                cards.remove(0);
+            }
 
-        cards.remove(cards.firstElement());
+            // Alert the page adapter that data has changed.
+            mPagerAdapter.notifyDataSetChanged();
+            mPager.invalidate();
+        }
 
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        // Transition to the new card.
+        mPager.setCurrentItem(cards.size() - 1, true);
 
-        Fragment newCardFragment = new ScreenSlideCardFragment();
-
-            Bundle bundle = new Bundle();
-            bundle.putString("title", c.getTitle());
-            bundle.putString("body", c.getBody());
-            bundle.putString("help", c.getHelp());
-            bundle.putString("type", c.getType());
-
-            newCardFragment.setArguments(bundle);
-
-        transaction.replace(mPagerAdapter.getFragmentAtPosition(0).getId(), newCardFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
-        getFragmentManager().executePendingTransactions();*/
-
-        // Remove the last card
-        cards.remove(cards.lastElement());
-
-        // Add the new card at the head of the list
-        cards.insertElementAt(c, 0);
-
-        // Auto transition to the new card
-        mPager.setCurrentItem(0, true);
-        System.out.println("Got dat card");
+        // Enable the refresh button again.
+        refreshButton.setEnabled(true);
     }
 
+    /** Adapter to handle card Vector data. */
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         public ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);
@@ -229,18 +212,11 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
         public Fragment getItem(int position) {
             Card c = cards.get(position);
 
-            // Create a bundle with card information.
-            Bundle bundle = new Bundle();
-            bundle.putString("title", c.getTitle());
-            bundle.putString("body", c.getBody());
-            bundle.putString("help", c.getHelp());
-            bundle.putString("type", c.getType());
-
             // Create the new fragment.
             ScreenSlideCardFragment s = new ScreenSlideCardFragment();
 
             // Provide the card data to the fragment.
-            s.setArguments(bundle);
+            s.setCard(c);
 
             return s;
         }
@@ -251,36 +227,38 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
         }
     }
 
-    /** Animation class to provide "stack of cards" feel. */
-    private class DepthPageTransformer implements ViewPager.PageTransformer {
-        private static final float MIN_SCALE = 0.75f;
+    /** Animation to provide a "table of cards" feel. */
+    private class ZoomOutPageTransformer implements ViewPager.PageTransformer {
+        private static final float MIN_SCALE = 0.85f;
+        private static final float MIN_ALPHA = 0.5f;
 
         public void transformPage(View view, float position) {
             int pageWidth = view.getWidth();
+            int pageHeight = view.getHeight();
 
             if (position < -1) { // [-Infinity,-1)
                 // This page is way off-screen to the left.
                 view.setAlpha(0);
 
-            } else if (position <= 0) { // [-1,0]
-                // Use the default slide transition when moving to the left page
-                view.setAlpha(1);
-                view.setTranslationX(0);
-                view.setScaleX(1);
-                view.setScaleY(1);
-
-            } else if (position <= 1) { // (0,1]
-                // Fade the page out.
-                view.setAlpha(1 - position);
-
-                // Counteract the default slide transition
-                view.setTranslationX(pageWidth * -position);
+            } else if (position <= 1) { // [-1,1]
+                // Modify the default slide transition to shrink the page as well
+                float scaleFactor = Math.max(MIN_SCALE, 1 - Math.abs(position));
+                float vertMargin = pageHeight * (1 - scaleFactor) / 2;
+                float horzMargin = pageWidth * (1 - scaleFactor) / 2;
+                if (position < 0) {
+                    view.setTranslationX(horzMargin - vertMargin / 2);
+                } else {
+                    view.setTranslationX(-horzMargin + vertMargin / 2);
+                }
 
                 // Scale the page down (between MIN_SCALE and 1)
-                float scaleFactor = MIN_SCALE
-                        + (1 - MIN_SCALE) * (1 - Math.abs(position));
                 view.setScaleX(scaleFactor);
                 view.setScaleY(scaleFactor);
+
+                // Fade the page relative to its size.
+                view.setAlpha(MIN_ALPHA +
+                        (scaleFactor - MIN_SCALE) /
+                                (1 - MIN_SCALE) * (1 - MIN_ALPHA));
 
             } else { // (1,+Infinity]
                 // This page is way off-screen to the right.

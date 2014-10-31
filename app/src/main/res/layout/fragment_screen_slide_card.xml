@@ -12,8 +12,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Card Title"
-        android:background="#ffd3d3d3"
-        android:id="@+id/titleView" />
+        android:background="#ff757575"
+        android:id="@+id/titleView"
+        android:textColor="#ffffffff"
+        android:textStyle="bold" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -28,7 +30,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        android:textColor="#212121" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -42,6 +45,7 @@
         android:layout_alignStart="@+id/bodyView"
         android:layout_marginTop="16dp"
         android:layout_alignParentStart="false"
-        android:layout_alignRight="@+id/bodyView" />
+        android:layout_alignRight="@+id/bodyView"
+        android:textColor="#424242" />
 
 </RelativeLayout>

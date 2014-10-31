@@ -12,32 +12,55 @@ import android.widget.TextView;
  */
 public class ScreenSlideCardFragment extends Fragment {
 
+    protected Card card;
+    protected TextView titleView;
+    protected TextView bodyView;
+    protected TextView helpView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_screen_slide_card, container, false);
-        TextView titleView = (TextView) rootView.findViewById(R.id.titleView);
-        TextView bodyView = (TextView) rootView.findViewById(R.id.bodyView);
-        TextView helpView = (TextView) rootView.findViewById(R.id.helpView);
+        titleView = (TextView) rootView.findViewById(R.id.titleView);
+        bodyView = (TextView) rootView.findViewById(R.id.bodyView);
+        helpView = (TextView) rootView.findViewById(R.id.helpView);
 
-        titleView.setText(getArguments().getString("title"));
-        bodyView.setText(getArguments().getString("body"));
-        helpView.setText(getArguments().getString("help"));
+        refreshView(card);
 
-        int bgColor = 0xffaaaaaa;
-        String type = getArguments().getString("type").toLowerCase();
+        return rootView;
+    }
 
-        if (type == "acting") {
-            bgColor = 0xff3d81ff;
-        } else if (type == "daring") {
-            bgColor = 0xffff3d3d;
-        } else if (type == "moving") {
-            bgColor = 0xff81ff3d;
-        } else if (type == "speaking") {
-            bgColor = 0xff8b3dff;
+    public Card getCard() {
+        return card;
+    }
+
+    public void setCard(Card c) {
+        card = c;
+        if (titleView != null) {
+            refreshView(card);
+        }
+    }
+
+    protected void refreshView(Card c)
+    {
+        // Set TextView data.
+        titleView.setText(c.getTitle());
+        bodyView.setText(c.getBody());
+        helpView.setText(c.getHelp());
+
+        // Update card color by type.
+        int bgColor = 0xff757575;
+        String type = c.getType().toLowerCase();
+
+        if (type.equals("acting")) {
+            bgColor = 0xff3f51b5;
+        } else if (type.equals("daring")) {
+            bgColor = 0xffe51c23;
+        } else if (type.equals("moving")) {
+            bgColor = 0xff259b24;
+        } else if (type.equals("speaking")) {
+            bgColor = 0xff673ab7;
         }
 
         titleView.setBackgroundColor(bgColor);
-
-        return rootView;
     }
 }

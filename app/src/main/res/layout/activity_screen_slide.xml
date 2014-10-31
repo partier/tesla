@@ -11,6 +11,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/black"
-        android:orientation="vertical" />
+        android:orientation="vertical"
+        android:layout_above="@+id/newCardButton" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Next Card"
+        android:id="@+id/newCardButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:clickable="true"
+        android:onClick="refreshCardState"
+        android:enabled="true" />
 
 </RelativeLayout>

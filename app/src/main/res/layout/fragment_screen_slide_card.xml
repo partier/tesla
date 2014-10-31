@@ -6,6 +6,49 @@
     android:baselineAligned="false"
     android:background="@android:color/white">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/titleView">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/bodyView"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="16dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp"
+                android:textColor="#212121"
+                android:text="Card body" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Card help"
+                android:id="@+id/helpView"
+                android:textStyle="italic"
+                android:layout_below="@+id/bodyView"
+                android:layout_alignLeft="@+id/bodyView"
+                android:layout_alignStart="@+id/bodyView"
+                android:layout_marginTop="16dp"
+                android:layout_alignParentStart="false"
+                android:layout_alignRight="@+id/bodyView"
+                android:textColor="#424242" />
+        </RelativeLayout>
+    </ScrollView>
+
     <TextView style="?android:textAppearanceMedium"
         android:padding="16dp"
         android:lineSpacingMultiplier="1.2"
@@ -16,36 +59,5 @@
         android:id="@+id/titleView"
         android:textColor="#ffffffff"
         android:textStyle="bold" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Card body"
-        android:id="@+id/bodyView"
-        android:layout_below="@+id/titleView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="16dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:textColor="#212121" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Card help"
-        android:id="@+id/helpView"
-        android:textStyle="italic"
-        android:layout_below="@+id/bodyView"
-        android:layout_alignLeft="@+id/bodyView"
-        android:layout_alignStart="@+id/bodyView"
-        android:layout_marginTop="16dp"
-        android:layout_alignParentStart="false"
-        android:layout_alignRight="@+id/bodyView"
-        android:textColor="#424242" />
 
 </RelativeLayout>

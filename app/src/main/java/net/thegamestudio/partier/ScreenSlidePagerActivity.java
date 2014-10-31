@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
 import com.pubnub.api.Callback;
 import com.pubnub.api.Pubnub;
@@ -32,7 +33,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
     private ViewPager mPager;
     private ScreenSlidePagerAdapter mPagerAdapter;
     private Vector<Card> cards;
-    private MenuItem refreshButton;
+    private Button newCardButton;
 
     private static UUID _uuid;
     private String _serverAddr = "https://partier-halloween.herokuapp.com/card";
@@ -58,6 +59,8 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
         }
         _uuid = UUID.fromString(prefs.getString(UUID_KEY, ""));
 
+        newCardButton = (Button) findViewById(R.id.newCardButton);
+
         // Create a set of placeholder cards
         cards = new Vector<Card>();
         cards.add(new Card());
@@ -78,25 +81,12 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.screen_slide_activity_actions, menu);
-        refreshButton = menu.findItem(R.id.action_refresh);
         return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle presses on the action bar items
-        switch(item.getItemId()) {
-            case R.id.action_refresh:
-                refreshCardState();
-                item.setEnabled(false);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private void refreshCardState() {
+    public void refreshCardState(View view) {
         // Refresh card state.
+        newCardButton.setEnabled(false);
         try {
             HTTPGetCardClient httpGetCardClient = new HTTPGetCardClient(_serverAddr, this, _uuid);
             httpGetCardClient.execute();
@@ -199,7 +189,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
         mPager.setCurrentItem(cards.size() - 1, true);
 
         // Enable the refresh button again.
-        refreshButton.setEnabled(true);
+        newCardButton.setEnabled(true);
     }
 
     /** Adapter to handle card Vector data. */

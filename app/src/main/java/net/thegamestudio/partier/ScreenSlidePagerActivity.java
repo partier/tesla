@@ -36,7 +36,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
     private Button newCardButton;
 
     private static UUID _uuid;
-    private String _serverAddr = "https://partier-halloween.herokuapp.com/card";
+    private String _serverAddr = "https://partier-imb.herokuapp.com/card";
     private static final String UUID_KEY = "uuid";
     private String _pubnubSubscribeKey = "sub-c-1cb1defc-5fca-11e4-bbb1-02ee2ddab7fe";
     private String _pubnubPublishKey = "pub-c-eaf5336a-e3d9-46dc-9846-937899691650";

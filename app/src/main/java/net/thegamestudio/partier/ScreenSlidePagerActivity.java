@@ -41,7 +41,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
     private String _pubnubSubscribeKey = "sub-c-1cb1defc-5fca-11e4-bbb1-02ee2ddab7fe";
     private String _pubnubPublishKey = "pub-c-eaf5336a-e3d9-46dc-9846-937899691650";
     private Pubnub _pubnub = null;
-    private String _pubnubChannel = "halloween";
+    private String _pubnubChannel = "a";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,42 +74,9 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
 
         // Required API 11.
         mPager.setPageTransformer(true, new ZoomOutPageTransformer());
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu items for use in the action bar
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.screen_slide_activity_actions, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    public void refreshCardState(View view) {
-        // Refresh card state.
-        newCardButton.setEnabled(false);
-        try {
-            HTTPGetCardClient httpGetCardClient = new HTTPGetCardClient(_serverAddr, this, _uuid);
-            httpGetCardClient.execute();
-        }
-        catch (Exception e)
-        {
-            // TODO: Notify the user that requesting a card failed and why
-            System.out.println(e.toString());
-        }
 
         // Test the pubnub endpoint for push availability
-        /*_pubnub = new Pubnub(_pubnubPublishKey, _pubnubSubscribeKey);
-        Callback networkTimeCallback = new Callback() {
-            @Override
-            public void successCallback(String channel, Object message) {
-                System.out.println(message.toString());
-            }
-
-            public void errorCallback(String channel, PubnubError error) {
-                System.out.println(error.toString());
-            }
-        };
-        _pubnub.time(networkTimeCallback);
+        _pubnub = new Pubnub(_pubnubPublishKey, _pubnubSubscribeKey);
 
         // Subscribe to the pubnub channel
         try
@@ -119,8 +86,8 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
                         @Override
                         public void connectCallback(String channel, Object message) {
                             System.out.println("SUBSCRIBE : CONNECT on channel " + channel +
-                                                 " : " + message.getClass() + " : " +
-                                                 message.toString());
+                                    " : " + message.getClass() + " : " +
+                                    message.toString());
                         }
 
                         @Override
@@ -151,11 +118,44 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
                     }
             );
         } catch (PubnubException e) {
+            System.out.println("EXCEPTION : " + e.toString());
+        }
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.screen_slide_activity_actions, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    public void refreshCardState(View view) {
+        // Refresh card state.
+        newCardButton.setEnabled(false);
+        try {
+            HTTPGetCardClient httpGetCardClient = new HTTPGetCardClient(_serverAddr, this, _uuid);
+            httpGetCardClient.execute();
+        }
+        catch (Exception e)
+        {
+            // TODO: Notify the user that requesting a card failed and why
+            System.out.println(e.toString());
         }
 
+        /*Callback networkTimeCallback = new Callback() {
+            @Override
+            public void successCallback(String channel, Object message) {
+                System.out.println(message.toString());
+            }
 
-        Callback callback = new Callback() {
+            public void errorCallback(String channel, PubnubError error) {
+                System.out.println(error.toString());
+            }
+        };
+        _pubnub.time(networkTimeCallback);*/
+
+        /*Callback callback = new Callback() {
             public void successCallback(String channel, Object response) {
                 System.out.println(response.toString());
             }

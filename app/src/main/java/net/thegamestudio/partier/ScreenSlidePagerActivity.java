@@ -2,12 +2,18 @@ package net.thegamestudio.partier;
 
 
 import android.app.FragmentTransaction;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.internal.view.menu.ActionMenuItemView;
@@ -24,6 +30,8 @@ import com.pubnub.api.PubnubException;
 
 import java.util.UUID;
 import java.util.Vector;
+
+import javax.xml.transform.Result;
 
 /**
  * Created by Zachary on 10/27/2014.
@@ -42,6 +50,10 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
     private String _pubnubPublishKey = "pub-c-eaf5336a-e3d9-46dc-9846-937899691650";
     private Pubnub _pubnub = null;
     private String _pubnubChannel = "a";
+
+    private String _notifyTitle = "Partier";
+    private String _notifyText = "New Card Available!";
+    private String _notifyTicker = "Partier Update";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +120,8 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
                             System.out.println("SUBSCRIBE : " + channel +
                                     " : " + message.getClass() + " : " +
                                     message.toString());
+
+                            ProduceNotification();
                         }
 
                         @Override
@@ -165,6 +179,31 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
             }
         };
         _pubnub.history(_pubnubChannel, 100, callback);*/
+    }
+
+    private void ProduceNotification()
+    {
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
+
+        notification.setContentTitle(_notifyTitle);
+
+        notification.setContentText(_notifyText);
+
+        notification.setTicker(_notifyTicker);
+
+        notification.setSmallIcon(R.drawable.ic_launcher);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(Result.class);
+
+        Intent resultIntent = new Intent(this, Result.class);
+        stackBuilder.addNextIntent(resultIntent);
+
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        notification.setContentIntent(pendingIntent);
+
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(0, notification.build());
     }
 
     public void CreateNewCard(String jsonCardData)
